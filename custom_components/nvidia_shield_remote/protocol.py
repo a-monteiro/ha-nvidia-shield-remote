@@ -39,6 +39,11 @@ PIN_STARTED_PREFIX = bytes.fromhex("080a120308cf08")
 PAIRING_CERT_PREFIX = bytes.fromhex("08b510")
 SUCCESS_TEXT = b"Success"
 
+# Derived from the official NVIDIA Shield TV Android app (v2.1.8):
+# BaseMessage(service_id=SERVICEID_ACCESSORY_LOCATOR/1011,
+#             payload=AccessoryLocatorRequest(REQUEST_FIND_ALL/1)).
+ACCESSORY_LOCATOR_FIND_ALL_PAYLOAD = "08f30712020801"
+
 KEY_PAYLOADS: dict[str, tuple[str, ...]] = {
     "UP": (
         "08e907120c08141001200a28013202ce01",
@@ -196,6 +201,11 @@ class ShieldProtocolClient:
         async with self._lock:
             await asyncio.to_thread(self._send_keys, list(keys))
 
+    async def async_locate_remote(self) -> None:
+        """Start the Shield remote locator using NVIDIA's local protocol."""
+        async with self._lock:
+            await asyncio.to_thread(self._locate_remote)
+
     async def async_wake(self) -> None:
         """Wake the Shield using NVIDIA's non-toggle power-on command."""
         await self.async_send_key("POWERON")
@@ -298,6 +308,13 @@ class ShieldProtocolClient:
             self._send_command_payloads(payloads)
             if any(key in {"POWER", "POWERON", "WAKE"} for key in normalized_keys):
                 self._close_command_socket()
+
+    def _locate_remote(self) -> None:
+        """Send the native accessory-locator FIND_ALL request."""
+        with self._thread_lock:
+            if self.credentials is None:
+                raise ShieldNotPairedError("Shield has not been paired")
+            self._send_command_payloads([ACCESSORY_LOCATOR_FIND_ALL_PAYLOAD])
 
     def _send_command_payloads(self, payloads: list[str]) -> None:
         last_error: BaseException | None = None
