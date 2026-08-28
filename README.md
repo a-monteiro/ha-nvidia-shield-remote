@@ -13,6 +13,7 @@ where the Shield should wake from standby without Wake-on-LAN.
 - Home Assistant `remote` entity
 - First-time PIN pairing in the Home Assistant setup flow
 - Wake using NVIDIA's non-toggle power-on command
+- Locate a paired physical remote with NVIDIA's audible locator
 - Core remote buttons: d-pad, select, back, home, play/pause, volume, mute
 
 ## Installation With HACS
@@ -31,6 +32,22 @@ screen.
 
 The generated client certificate and key are stored in Home Assistant's config
 entry storage. Do not copy them into YAML or publish them.
+
+## Locate A Remote
+
+After pairing, start the audible locator for a Shield remote:
+
+```yaml
+service: nvidia_shield_remote.locate_remote
+target:
+  entity_id: remote.nvidia_shield
+```
+
+When more than one Shield is configured, `entity_id` is required so the request
+is sent to the intended Shield. The service uses the same locally paired TLS
+connection as the remote controls; it does not use ADB or require Developer
+Options. The Shield may locate every compatible remote accessory paired with
+the selected Shield.
 
 ## Example Commands
 
