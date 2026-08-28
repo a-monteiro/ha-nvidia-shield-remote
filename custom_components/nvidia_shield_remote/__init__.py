@@ -27,6 +27,7 @@ from .const import (
     PLATFORMS,
     SERVICE_REQUEST_PAIRING,
     SERVICE_SEND_KEY,
+    SERVICE_LOCATE_REMOTE,
     SERVICE_SLEEP,
     SERVICE_SUBMIT_PIN,
     SERVICE_WAKE,
@@ -138,6 +139,10 @@ def _register_services(hass: HomeAssistant) -> None:
         for runtime in _runtimes_from_call(hass, call):
             await _call_client(runtime.client.async_send_key, key)
 
+    async def handle_locate_remote(call: ServiceCall) -> None:
+        for runtime in _runtimes_from_call(hass, call):
+            await _call_client(runtime.client.async_locate_remote)
+
     async def handle_wake(call: ServiceCall) -> None:
         for runtime in _runtimes_from_call(hass, call):
             await _call_client(runtime.client.async_wake)
@@ -163,6 +168,12 @@ def _register_services(hass: HomeAssistant) -> None:
         SERVICE_SEND_KEY,
         handle_send_key,
         schema=SERVICE_KEY_SCHEMA,
+    )
+    hass.services.async_register(
+        DOMAIN,
+        SERVICE_LOCATE_REMOTE,
+        handle_locate_remote,
+        schema=SERVICE_ENTITY_SCHEMA,
     )
     hass.services.async_register(
         DOMAIN,

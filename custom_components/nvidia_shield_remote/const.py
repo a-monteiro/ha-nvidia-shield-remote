@@ -20,6 +20,7 @@ PLATFORMS = [Platform.REMOTE]
 SERVICE_REQUEST_PAIRING = "request_pairing"
 SERVICE_SUBMIT_PIN = "submit_pin"
 SERVICE_SEND_KEY = "send_key"
+SERVICE_LOCATE_REMOTE = "locate_remote"
 SERVICE_WAKE = "wake"
 SERVICE_SLEEP = "sleep"
 

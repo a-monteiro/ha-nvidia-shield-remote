@@ -54,6 +54,17 @@ send_key:
             - POWER
             - POWERON
 
+locate_remote:
+  name: Locate remote
+  description: Start the paired Shield remote's audible locator using NVIDIA's local protocol.
+  fields:
+    entity_id:
+      required: false
+      selector:
+        entity:
+          integration: nvidia_shield_remote
+          domain: remote
+
 wake:
   name: Wake
   description: Wake the Shield using NVIDIA's non-toggle power-on command.
